@@ -4,22 +4,21 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using MyShop.Core.Models;
-using MyShop.Core.ViewModels;
 using MyShop.DataAccess.InMemory;
+using MyShop.Core.ViewModels;
 
 namespace MyShop.WebUI.Controllers
 {
     public class ProductManagerController : Controller
     {
-       ProductRepository context;
-        private ProductCategoryRepository productCategories;
+        InMemoryRepository<Product> context;
+        InMemoryRepository<ProductCategory> productCategories;
 
         public ProductManagerController()
         {
-            context = new ProductRepository();
-            productCategories = new ProductCategoryRepository();
+            context = new InMemoryRepository<Product>();
+            productCategories = new InMemoryRepository<ProductCategory>();
         }
-
         // GET: ProductManager
         public ActionResult Index()
         {
@@ -30,7 +29,6 @@ namespace MyShop.WebUI.Controllers
         public ActionResult Create()
         {
             ProductManagerViewModel viewModel = new ProductManagerViewModel();
-
 
             viewModel.Product = new Product();
             viewModel.ProductCategories = productCategories.Collection();
@@ -51,9 +49,10 @@ namespace MyShop.WebUI.Controllers
 
                 return RedirectToAction("Index");
             }
+
         }
 
-        public ActionResult Edit(String Id)
+        public ActionResult Edit(string Id)
         {
             Product product = context.Find(Id);
             if (product == null)
@@ -65,6 +64,7 @@ namespace MyShop.WebUI.Controllers
                 ProductManagerViewModel viewModel = new ProductManagerViewModel();
                 viewModel.Product = product;
                 viewModel.ProductCategories = productCategories.Collection();
+
                 return View(viewModel);
             }
         }
@@ -73,6 +73,7 @@ namespace MyShop.WebUI.Controllers
         public ActionResult Edit(Product product, string Id)
         {
             Product productToEdit = context.Find(Id);
+
             if (productToEdit == null)
             {
                 return HttpNotFound();
@@ -99,6 +100,7 @@ namespace MyShop.WebUI.Controllers
         public ActionResult Delete(string Id)
         {
             Product productToDelete = context.Find(Id);
+
             if (productToDelete == null)
             {
                 return HttpNotFound();
@@ -121,11 +123,9 @@ namespace MyShop.WebUI.Controllers
             }
             else
             {
-               context.Delete(Id);
-               context.Commit();
-               return RedirectToAction("Index");
+                context.Delete(Id);
+                return RedirectToAction("Index");
             }
-
         }
     }
 }
